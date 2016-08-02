@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.atguigu.crm.mapper.ProductMapper">
+
+	<select id="getAllProducts" resultType="com.atguigu.crm.entity.Product">
+		select *
+		from products p
+	</select>
+
+	<delete id="delete">
+		delete products
+		 where id = #{id}
+	</delete>
+
+	<update id="update">
+		update products
+		   set batch = #{batch},
+		       memo = #{memo},
+		       name = #{name},
+		       price = #{price},
+		       type = #{type},
+		       unit = #{unit}
+		where id = #{id}
+	</update>
+
+	<select id="getById" resultType="com.atguigu.crm.entity.Product">
+		select *
+		from products p
+		where p.id = #{id}
+	</select>
+
+	<insert id="create">
+		insert into products
+		  (id, batch, memo, name, price, type, unit)
+		values
+		  (crm_seq.nextval, #{batch}, #{memo}, #{name}, #{price}, #{type}, #{unit})
+	</insert>
+
+	<select id="getContent" resultType="com.atguigu.crm.entity.Product">
+		select * from
+		(select rownum rn,p.*
+		from products p
+		<include refid="queryCondition"/>)
+		<![CDATA[
+		where rn >= #{fromIndex} and rn < #{endIndex}
+		]]>
+	</select>
+
+	<select id="getTotalElements" resultType="int">
+		select count(*)
+		from products p
+		<include refid="queryCondition"/>
+	</select>
+	
+	<sql id="queryCondition">
+		<where>
+			<if test="name != null">
+				and p.name like #{name}
+			</if>
+			<if test="type != null">
+				and p.type like #{type}
+			</if>
+			<if test="batch != null">
+				and p.batch like #{batch}
+			</if>
+		</where>
+	</sql>
+</mapper>

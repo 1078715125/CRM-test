@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.atguigu.crm.mapper.CustomerActivityMapper">
+
+	<delete id="delete">
+		delete from customer_activities t
+		where t.id = #{id}
+	</delete>
+
+	<update id="update">
+		update customer_activities t set
+		t.activity_date = #{date}, t.description = #{description},
+		t.place = #{place},t.title = #{title}
+		where id = #{id}
+	</update>
+
+	<select id="getById" resultType="com.atguigu.crm.entity.CustomerActivity">
+		select t.id, t.activity_date as "date", t.description, t.place,
+		t.title,t.customer_id as "customer.id"
+        from customer_activities t
+        where t.id = #{id}
+	</select>
+
+	<insert id="create">
+		insert into customer_activities(id,activity_date,description,place,title,customer_id)
+		values(crm_activitie_seq.nextval,#{date},#{description},#{place},#{title},#{customer.id})
+	</insert>
+
+	<select id="getContent" resultType="com.atguigu.crm.entity.CustomerActivity">
+		select *
+  		from (select rownum rn,
+               t.id, t.activity_date as "date", t.description, t.place, t.title
+          from customer_activities t
+          <include refid="queryCondition"/>)
+          <![CDATA[
+	          where rn >= #{fromIndex} and rn < #{endIndex}
+          ]]>
+	</select>
+
+	<select id="getTotalElements" resultType="int">
+		select count(*) from customer_activities t
+		<include refid="queryCondition"/>
+	</select>
+	
+	<sql id="queryCondition">
+		<where>
+			<if test="custId != null">
+				t.customer_id = #{custId}
+			</if>
+		</where>
+	</sql>
+</mapper>

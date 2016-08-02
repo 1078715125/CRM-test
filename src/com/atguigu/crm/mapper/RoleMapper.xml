@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.atguigu.crm.mapper.RoleMapper">
+
+	<select id="getParentAuthoritiesByUserId" resultMap="withSubAuth">
+		select pa.id, pa.display_name
+		from 
+		authorities pa
+		left join authorities sa
+		on sa.parent_authority_id = pa.id 
+		left join role_authority ra
+		on ra.authority_id = sa.id
+		left join roles r
+		on r.id = ra.role_id
+		left join users u
+		on u.role_id = r.id
+		where pa.parent_authority_id is null
+		and u.id = #{id}
+		group by pa.id,pa.display_name
+	</select>
+	<resultMap type="com.atguigu.crm.entity.Authority" id="withSubAuth">
+		<id property="id" column="id"/>
+		<collection property="subAuthorities" ofType="com.atguigu.crm.entity.Authority"
+		column="id" select="getSubAuth"/>
+	</resultMap>
+	<select id="getSubAuth" resultType="com.atguigu.crm.entity.Authority">
+		select sa.id, sa.display_name,sa.url from authorities sa
+		where sa.parent_authority_id = #{id}
+	</select>
+
+	<insert id="updateRelationship">
+		insert into role_authority
+		(role_id, authority_id)
+		<foreach collection="authorities" item="auth" separator="union all">
+			select #{id},#{auth.id} from dual
+		</foreach>
+	</insert>
+
+	<delete id="deleteOldRelationship">
+		delete from role_authority ra
+		where ra.role_id = #{id}
+	</delete>
+
+	<select id="getWithAuthById" resultMap="withAuth">
+		select r.*
+		from roles r
+		where r.id = #{id}
+	</select>
+	<resultMap type="com.atguigu.crm.entity.Role" id="withAuth">
+		<id property="id" column="id" />
+		<collection property="authorities" ofType="com.atguigu.crm.entity.Authority"
+			column="id" select="selectAuth" fetchType="eager" />
+	</resultMap>
+	<select id="selectAuth" resultType="com.atguigu.crm.entity.Authority">
+		select a.*
+		from authorities a
+		left join role_authority ra
+		on a.id = ra.authority_id
+		where ra.role_id = #{id}
+	</select>
+
+	<delete id="delete">
+		delete from roles
+		where id = #{id}
+	</delete>
+
+	<update id="update">
+		update roles
+		set description = #{description},
+		enabled = #{enabled},
+		name = #{name}
+		where id = #{id}
+	</update>
+
+	<select id="getById" resultType="com.atguigu.crm.entity.Role">
+		select *
+		from roles r
+		where r.id = #{id}
+	</select>
+
+	<insert id="create">
+		insert into roles
+		(id, description, enabled, name)
+		values
+		(crm_seq.nextval, #{description}, #{enabled}, #{name})
+	</insert>
+
+	<select id="getContent" resultType="com.atguigu.crm.entity.Role">
+		select * from
+		(select rownum rn,r.*
+		from roles r)
+		<![CDATA[
+		where rn >= #{fromIndex} and rn < #{endIndex}
+		]]>
+	</select>
+
+	<select id="getTotalElements" resultType="int">
+		select count(*)
+		from roles
+	</select>
+
+	<select id="getAllRoles" resultType="com.atguigu.crm.entity.Role">
+		select *
+		from roles
+	</select>
+</mapper>

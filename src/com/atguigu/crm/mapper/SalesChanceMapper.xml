@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.atguigu.crm.mapper.SalesChanceMapper">
+
+
+	<update id="updateStatusFinish">
+		update sales_chances s
+		set s.status = #{status}
+		where s.id = #{id}
+	</update>
+
+	<update id="dispatch">
+		update sales_chances s
+		set s.designee_id =
+		#{designee.id} , s.designee_date = #{designeeDate} ,
+		s.status =
+		#{status}
+		where s.id = #{id}
+	</update>
+
+
+	<select id="getWithPlanById" resultMap="withPlan">
+		select s.id, source,
+		cust_name, rate, title, contact, contact_tel,
+		description, create_date
+		,designee_id as "designee.id",u1.name as "designee.name"
+		,created_user_id as "createBy.id",u2.name as "createBy.name"
+		from
+		sales_chances s
+		left join users u1
+		on
+		s.designee_id = u1.id
+		left join users u2
+		on
+		s.created_user_id = u2.id
+		where s.id =
+		#{id}
+	</select>
+
+	<resultMap type="com.atguigu.crm.entity.SalesChance" id="withPlan">
+		<id column="id" property="id"/>
+		<result column="rate" property="rate"/>
+		<collection property="salesPlans" column="id"
+			ofType="com.atguigu.crm.entity.SalesPlan" select="getPlan">
+		</collection>
+	</resultMap>
+
+	<select id="getPlan" resultType="com.atguigu.crm.entity.SalesPlan">
+		select
+		p.id,p.plan_date as "date",p.plan_result as "result",p.todo
+		from sales_plan p
+		where p.chance_id = #{id}
+		order by p.id asc
+	</select>
+
+	<select id="getWithUserById" resultType="com.atguigu.crm.entity.SalesChance">
+		select s.id, source,
+		cust_name, rate, title, contact, contact_tel,
+		description, create_date
+		,CREATED_USER_ID as "createBy.id",u.name as
+		"createBy.name"
+		from
+		sales_chances s
+		left join users u
+		on
+		s.CREATED_USER_ID = u.id
+		where s.id =
+		#{id}
+	</select>
+
+	<update id="update">
+		update sales_chances set source = #{source},
+		cust_name = #{custName},
+		rate = #{rate}, title = #{title}, contact =
+		#{contact}, contact_tel = #{contactTel},
+		description = #{description}
+		where id = #{id}
+	</update>
+
+	<select id="getById" resultType="com.atguigu.crm.entity.SalesChance">
+		select id, source, cust_name,
+		rate, title, contact, contact_tel,
+		description, create_date,cust_name,contact_tel,contact
+		from
+		sales_chances
+		where id = #{id}
+	</select>
+
+	<delete id="delete">
+		delete from sales_chances where id = #{id}
+	</delete>
+
+	<insert id="save">
+		insert into sales_chances (id, source, cust_name,
+		rate, title, contact, contact_tel,
+		description, status,
+		created_user_id, create_date)
+		values(crm_seq.nextval,#{source},#{custName},#{rate},#{title},#{contact},#{contactTel},
+		#{description},#{status},#{createBy.id},#{createDate})
+	</insert>
+
+	<select id="getContent" resultType="com.atguigu.crm.entity.SalesChance">
+		select *
+		from (select rownum rn,
+		s.id,s.status,
+		s.cust_name,
+		s.title,
+		s.contact,
+		s.contact_tel,
+		s.create_date
+		from sales_chances s
+		<include refid="queryCondition"/>)
+		a
+		<![CDATA[
+		where a.rn >= #{firstIndex} and a.rn < #{lastIndex}
+		]]>
+
+	</select>
+
+	<select id="getTotalElements" resultType="long">
+		select count(*)
+		from
+		sales_chances s
+		<include refid="queryCondition"/>
+	</select>
+
+	<sql id="queryCondition">
+		<where>
+			<if test="status == 1">
+				s.status = #{status}
+			</if>
+			<if test="status != 1">
+				s.status != 1
+			</if>
+			<if test="createById != null">
+				and s.created_user_id = #{createById}
+			</if>
+			<if test="designeeId != null">
+				and s.designee_id = #{designeeId}
+			</if>
+			<if test="contact != null">
+				and s.contact like #{contact}
+			</if>
+			<if test="custName != null">
+				and s.cust_name like #{custName}
+			</if>
+			<if test="title != null">
+				and s.title like #{title}
+			</if>
+		</where>
+	</sql>
+
+</mapper>

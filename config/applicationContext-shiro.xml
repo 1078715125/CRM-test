@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+        <property name="cacheManager" ref="cacheManager"/>
+        <property name="realm" ref="crmRealm"/>
+    </bean>
+
+    <!--  
+    	配置 shiro 的 CacheManager. 
+    	1. 通常使用 ehcache
+    	2. 可以加入 cacheManagerConfigFile 属性来指定具体的 ehcache 的配置文件
+    	3. 需要额外加入 ehcache 的 jar 包. 
+    -->     
+    <bean id="cacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager">
+        <property name="cacheManagerConfigFile" value="classpath:ehcache.xml"/> 
+    </bean>
+<!--     <bean id="realm" class="com.atguigu.shiro.realm.MyRealm"> -->
+<!--     	<property name="credentialsMatcher"> -->
+<!--     		<bean class="org.apache.shiro.authc.credential.HashedCredentialsMatcher"> -->
+<!--     			<property name="hashAlgorithmName" value="MD5"/> -->
+<!--     			<property name="hashIterations" value="1024"/> -->
+<!--     		</bean> -->
+<!--     	</property> -->
+<!--     </bean> -->
+
+    <!--  
+    	配置自动调用配置在 Spring 中 shiro 组件的生命周期方法的 BeanPostProcessor. 
+    -->        
+    <bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
+    <!--  
+    	配置在 Spring 中启用 shiro 注解. 
+    	1. 注意必须要在配置了 LifecycleBeanPostProcessor 的情况下才可以使用.
+    <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"
+          depends-on="lifecycleBeanPostProcessor"/>
+    <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+        <property name="securityManager" ref="securityManager"/>
+    </bean>
+    -->     
+
+    <!--  
+    	配置 Shiro Filter. 
+    	1. 在 web.xml 文件中通过配置 DelegatingFilterProxy 来定位到当前的 Filter bean
+    -->     
+    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+        <property name="securityManager" ref="securityManager"/>
+        <property name="loginUrl" value="/index"/>
+        <property name="unauthorizedUrl" value="/unauthorized"/>
+		<!-- 
+			配置具体的资源和被拦截的关系 
+			1. 需要参照 PPT 中 shiro 中默认的过滤器
+			2. anon: 匿名的. 即任何资源都可以在不被认证和没有权限的情况下被访问. 
+			3. authc: 认证的. 该 filter 对应的资源只有在用户被认证之后才可以访问. 
+		-->
+        <property name="filterChainDefinitions">
+            <value>
+                /index = anon
+                /user/shiroLogin = anon
+                /login = authc
+                
+                /static/** = anon
+                /images/** = anon
+                
+                /role/** = roles[role]
+				/user/** = roles[user]
+				/chance/** = roles[chance]
+				/plan/** = roles[plan]
+				/dict/** = roles[dict]
+				/product/** = roles[product]
+				/storage/** = roles[storage]
+				/customer/** = roles[customer]
+				/drain/** = roles[drain]
+				
+				/service/create/** = roles[service-create]
+				/service/allot/** = roles[service-allot]
+				/service/deal/** = roles[service-deal]
+				/service/feedback/** = roles[service-feedback]
+				/service/archive/** = roles[service-archive]
+				
+				/contact/** = roles[customer]
+                
+                /** = authc
+            </value>
+        </property>
+    </bean>
+<!--         <property name="filterChainDefinitionMap" ref="definitionMap"/> -->
+    
+<!--     <bean id="definitionMap" factory-bean="definitionMapFactoryBean" factory-method="getDefinitionMap"/> -->
+    
+<!--     <bean id="definitionMapFactoryBean" class="com.atguigu.shiro.realm.DefinitionMapFactoryBean"></bean> -->
+	
+
+</beans>

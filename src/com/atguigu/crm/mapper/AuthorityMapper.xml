@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.atguigu.crm.mapper.AuthorityMapper">
+
+	<select id="getParentAuthorities" resultMap="paMap">
+		select a.id,a.display_name
+		from authorities a
+		where a.parent_authority_id is null
+	</select>
+	
+	<resultMap type="com.atguigu.crm.entity.Authority" id="paMap">
+		<id column="id" property="id"/>
+		<collection property="subAuthorities" ofType="com.atguigu.crm.entity.Authority"
+		column="id" select="selectSub">
+		</collection>
+	</resultMap>
+	
+	<select id="selectSub" resultType="com.atguigu.crm.entity.Authority">
+		select a.id,a.display_name
+		from authorities a
+		where a.parent_authority_id = #{id}
+	</select>
+	
+</mapper>
