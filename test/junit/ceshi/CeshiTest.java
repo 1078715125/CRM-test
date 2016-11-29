@@ -16,5 +16,9 @@ public class CeshiTest {
 		System.out.println("喔哈哈");
 		System.out.println("喔哈哈-remote");
 	}
+	
+	public static void print(){
+		System.out.println("hello!I`m from dev-2!");
+	}
 
 }
