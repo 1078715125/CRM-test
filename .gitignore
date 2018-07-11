@@ -1,0 +1,8 @@
+# Created by .ignore support plugin (hsz.mobi)
+.idea
+.settings
+.classpath
+.project
+.springBeans
+CRM_gm.iml
+build
