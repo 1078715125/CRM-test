@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.gaomin.crm.mapper.DictMapper">
+
+	<delete id="delete">
+		delete dicts
+		 where id = #{id}
+	</delete>
+
+	<update id="update">
+		update dicts
+	   	set editable = #{editable},
+	       item = #{item},
+	       type = #{type},
+	       value = #{value}
+		where id = #{id}
+	</update>
+
+	<select id="getById" resultType="com.gaomin.crm.entity.Dict">
+		select *
+		from dicts d
+		where d.id = #{id}
+	</select>
+
+	<insert id="create">
+		insert into dicts
+			(id, editable, item, type, value)
+		values
+			(crm_dict_seq.nextval, #{editable}, #{item}, #{type}, #{value})
+	</insert>
+
+	<select id="getContent" resultType="com.gaomin.crm.entity.Dict">
+		select * from
+		(select rownum rn,d.*
+		from dicts d
+		<include refid="queryCondition"/>)
+		<![CDATA[
+		where rn >= #{fromIndex} and rn < #{endIndex}
+		]]>
+	</select>
+
+	<select id="getTotalElements" resultType="int">
+		select count(*)
+		from dicts d
+		<include refid="queryCondition"/>
+	</select>
+	
+	<sql id="queryCondition">
+		<where>
+			<if test="type != null">
+				and d.type like #{type}
+			</if>
+			<if test="item != null">
+				and d.item like #{item}
+			</if>
+			<if test="value != null">
+				and d.value like #{value}
+			</if>
+		</where>
+	</sql>
+
+	<select id="getServiceTypes" resultType="java.lang.String">
+		select d.item from dicts d
+		where d.type = '服务类型'
+	</select>
+	
+	<select id="getCredits" resultType="java.lang.String">
+		select d.item from dicts d
+		where d.type = '信用度'
+	</select>
+	
+	<select id="getSatisfies" resultType="java.lang.String">
+		select d.item from dicts d
+    	where d.type = '满意度'
+	</select>
+	
+	<select id="getLevels" resultType="java.lang.String">
+		select d.item from dicts d
+		where d.type = '客户等级'
+	</select>
+
+	<select id="getRegions" resultType="java.lang.String">
+		select d.item from dicts d
+		where d.type = '地区'
+	</select>
+
+</mapper>

@@ -1,7 +1,7 @@
 <%@ tag language="java" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-<%@ attribute name="page" required="true" rtexprvalue="true" type="com.atguigu.crm.model.Page"%>
+<%@ attribute name="page" required="true" rtexprvalue="true" type="com.gaomin.crm.model.Page"%>
 <%@ attribute name="formId" required="true" rtexprvalue="true" type="java.lang.String" %>
 
 <div style="text-align: right; padding: 6px 6px 0 0;">

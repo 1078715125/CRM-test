@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.gaomin.crm.mapper.CustomerDrainMapper">
+
+	<update id="drain">
+		update customer_drains t set 
+		t.reason = #{reason},t.status = #{status},t.drain_date = #{drainDate}
+		where t.id = #{id}
+	</update>
+
+	<update id="updateDelay">
+		update customer_drains t set t.delay = t.delay || #{delay}
+		where t.id = #{id}
+	</update>
+	
+	<select id="getById" resultType="com.gaomin.crm.entity.CustomerDrain">
+		select t.id,c.name as "customer.name",t.customer_id as "customer.id",
+		ct.name as "customer.manager.name",t.last_order_date,
+		t.drain_date,t.reason,t.status,t.delay
+		from customer_drains t
+		left join customers c
+		on t.customer_id = c.id
+		left join contacts ct
+		on c.manager_id = ct.id
+		where t.id = #{id}
+	</select>
+
+	<select id="getContent" resultType="com.gaomin.crm.entity.CustomerDrain">
+		select * from
+		(select rownum rn,t.id,c.name as "customer.name",
+		ct.name as "customer.manager.name",t.last_order_date,
+		t.drain_date,t.reason,t.status
+		from customer_drains t
+		left join customers c
+		on t.customer_id = c.id
+		left join contacts ct
+		on c.manager_id = ct.id
+		<include refid="queryCondition"/>)
+		<![CDATA[
+			where rn >= #{fromIndex} and rn < #{endIndex}
+		]]>
+	</select>
+
+	<select id="getTotalElements" resultType="int">
+		select count(*) 
+		from customer_drains t
+		left join customers c
+		on t.customer_id = c.id
+		left join contacts ct
+		on c.manager_id = ct.id
+		<include refid="queryCondition"/>
+	</select>
+	
+	<sql id="queryCondition">
+		<where>
+			<if test="customerName != null">
+				and c.name like #{customerName}					
+			</if>
+			<if test="managerName != null">
+				and ct.name like #{managerName}					
+			</if>
+		</where>
+	</sql>
+</mapper>

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.gaomin.crm.mapper.ReportMapper">
+
+	<select id="getDrainContent" resultType="com.gaomin.crm.entity.CustomerDrain">
+		select * from
+		(select rownum rn, drain_date, c.name as "customer.name", 
+		ct.name as "customer.manager.name", reason
+		from customer_drains cs
+		left join customers c
+		on cs.customer_id = c.id
+		left join contacts ct
+		on c.manager_id = ct.id
+		<include refid="queryCondition"/>)
+		<![CDATA[
+			where rn >= #{fromIndex} and rn < #{endIndex}
+		]]>
+	</select>
+
+	<select id="getDrainTotalElements" resultType="int">
+		select count(*)
+		from customer_drains cs
+		left join customers c
+		on cs.customer_id = c.id
+		left join contacts ct
+		on c.manager_id = ct.id
+		<include refid="queryCondition"/>
+	</select>
+
+	<select id="getServiceContent" resultType="java.util.Map">
+		select * from
+		(select a.name as "name",a.count as "count",rownum rn from
+		(select c.customer_level as name,count(distinct c.id) as count
+		from customers c
+		left join orders o
+    	on o.customer_id = c.id
+		<include refid="queryCondition"/>
+		group by c.customer_level)a)
+		<![CDATA[
+			where rn >= #{fromIndex} and rn < #{endIndex}
+		]]>
+	</select>
+
+	<select id="getServiceTotalElements" resultType="int">
+		select count(*)from
+		(select c.customer_level as name,count(distinct c.id) as count
+		from customers c
+		left join orders o
+    	on o.customer_id = c.id
+		<include refid="queryCondition"/>
+		group by c.customer_level)
+	</select>
+
+	<select id="getConsistContent" resultType="java.util.Map">
+		select * from
+		(select a.name as "name",a.count as "count",rownum rn from
+		(<include refid="queryConsist"/>)a)
+		<![CDATA[
+			where rn >= #{fromIndex} and rn < #{endIndex}
+		]]>
+	</select>
+
+	<select id="getConsistTotalElements" resultType="int">
+			select count(*)from
+			(<include refid="queryConsist"/>)
+	</select>
+	
+	<sql id="queryConsist">
+		<if test="type != null and type != 'level'">
+			select c.${type} as name,count(*) as count
+			from customers c
+			group by c.${type}
+		</if>
+		<if test="type == null or type == 'level'">
+			select c.customer_level as name,count(*) as count
+			from customers c
+			group by c.customer_level
+		</if>
+	</sql>
+	
+	<select id="getPayContent" resultType="java.util.Map">
+		select * from
+		(select rownum rn,name as "name",orderMoney as "orderMoney" from
+		(select cv.name,sum(cv.order_money)as orderMoney 
+		from customer_order_report_v cv
+		<include refid="queryCondition"/>
+		group by cv.name))
+		<![CDATA[
+			where rn >= #{fromIndex} and rn < #{endIndex}
+		]]>
+	</select>
+
+	<select id="getPayTotalElements" resultType="int">
+		select count(distinct cv.name) 
+		from customer_order_report_v cv
+		<include refid="queryCondition"/>
+	</select>
+	
+	<sql id="queryCondition">
+		<where>
+			<if test="name != null">
+				and cv.name like #{name}
+			</if>
+			<if test="dateGe != null">
+				and cv.order_date >= #{dateGe}
+			</if>
+			<if test="dateLe != null">
+				<![CDATA[
+					and cv.order_date <= #{dateLe}
+				]]>
+			</if>
+			<if test="createDateGe != null">
+				and order_date >= #{createDateGe}
+			</if>
+			<if test="createDateLe != null">
+				<![CDATA[
+					and order_date <= #{createDateLe}
+				]]>
+			</if>
+			<if test="customerName != null">
+				and c.name like #{customerName}
+			</if>
+			<if test="managerName != null">
+				and ct.name like #{managerName}
+			</if>
+		</where>
+	</sql>
+</mapper>

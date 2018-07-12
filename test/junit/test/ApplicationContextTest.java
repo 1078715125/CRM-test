@@ -12,17 +12,17 @@ import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import com.atguigu.crm.entity.Authority;
-import com.atguigu.crm.entity.Contact;
-import com.atguigu.crm.entity.Role;
-import com.atguigu.crm.entity.User;
-import com.atguigu.crm.mapper.AuthorityMapper;
-import com.atguigu.crm.mapper.RoleMapper;
-import com.atguigu.crm.mapper.SalesChanceMapper;
-import com.atguigu.crm.mapper.TestBatch;
-import com.atguigu.crm.mapper.UserMapper;
-import com.atguigu.crm.service.SalesChanceService;
-import com.atguigu.crm.service.UserService;
+import com.gaomin.crm.entity.Authority;
+import com.gaomin.crm.entity.Contact;
+import com.gaomin.crm.entity.Role;
+import com.gaomin.crm.entity.User;
+import com.gaomin.crm.mapper.AuthorityMapper;
+import com.gaomin.crm.mapper.RoleMapper;
+import com.gaomin.crm.mapper.SalesChanceMapper;
+import com.gaomin.crm.mapper.TestBatch;
+import com.gaomin.crm.mapper.UserMapper;
+import com.gaomin.crm.service.SalesChanceService;
+import com.gaomin.crm.service.UserService;
 
 public class ApplicationContextTest {
 

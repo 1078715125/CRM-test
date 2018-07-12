@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.gaomin.crm.mapper.OrderMapper">
+
+	<select id="getWithDetailById" resultMap="withDetail">
+		select t.id, t.address, t.order_date as "date", t.no, 
+		t.status, t.customer_id as "customer.id"
+		from orders t
+		where t.id = #{id}
+	</select>
+	<resultMap type="com.gaomin.crm.entity.Order" id="withDetail">
+		<id column="id" property="id"/>
+		<collection property="items" column="id"
+                    ofType="com.gaomin.crm.entity.OrderItem" select="getDetail"/>
+	</resultMap>
+	<select id="getDetail" resultType="com.gaomin.crm.entity.OrderItem">
+		select t.id,t.item_count as "count",t.money,t.product_id as "product.id",
+		p.name as "product.name" ,p.unit as "product.unit"
+		from order_items t
+		left join products p
+		on t.product_id = p.id
+		where t.order_id = #{id}
+	</select>
+	
+	<select id="getContent" resultType="com.gaomin.crm.entity.Order">
+		select * from
+		(select rownum rn,t.id, t.address, t.order_date as "date", t.no, t.status, t.customer_id
+		from orders t
+		<include refid="queryCondition"/>)
+		<![CDATA[
+			where rn >= #{fromIndex} and rn < #{endIndex}
+		]]>
+	</select>
+
+	<select id="getTotalElements" resultType="int">
+		select count(*)
+		from orders t
+		<include refid="queryCondition"/>
+	</select>
+
+	<sql id="queryCondition">
+		<where>
+			<if test="custId != null">
+				t.customer_id = #{custId}
+			</if>
+		</where>
+	</sql>
+</mapper>

@@ -3,7 +3,7 @@ package junit.test;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.junit.Test;
 
-import com.atguigu.crm.model.PropertyFilter;
+import com.gaomin.crm.model.PropertyFilter;
 
 public class CommonTest {
 

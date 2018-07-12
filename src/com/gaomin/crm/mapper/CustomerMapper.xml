@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.gaomin.crm.mapper.CustomerMapper">
+
+	<select id="getAllCustomers" resultType="com.gaomin.crm.entity.Customer">
+		select
+		c.id,c.name
+		from customers c
+	</select>
+
+	<update id="updateStatus">
+		update customers c set
+		c.state = #{state}
+		where c.id = #{id}
+	</update>
+
+	<update id="update">
+		update customers c
+		set c.address = #{address},c.chief = #{chief},c.name = #{name},
+		c.region = #{region},c.manager_id = #{manager.id},c.customer_level = #{level},
+		c.state = #{state},c.bank = #{bank},c.bank_account = #{bankAccount},
+		c.bankroll = #{bankroll},c.credit = #{credit},c.fax = #{fax},
+		c.licence_no = #{licenceNo},c.local_tax_no = #{localTaxNo},c.national_tax_no = #{nationalTaxNo},
+		c.tel = #{tel},c.satify = #{satify},c.turnover = #{turnover},
+		c.websit = #{websit},c.zip = #{zip}
+		where id = #{id}
+	</update>
+
+	<select id="getCustById" resultType="com.gaomin.crm.entity.Customer">
+		select
+		c.id,c.address,c.chief,c.name,c.no,c.region,
+		c.manager_id
+		as"manager.id",
+		ct.name as
+		"manager.name",
+		c.customer_level as "level",
+		c.state,c.bank,c.bank_account,
+		c.bankroll,c.credit,c.fax,c.licence_no ,
+		c.local_tax_no,c.national_tax_no,c.tel,
+		c.satify,c.turnover,c.websit,c.zip
+		from customers c
+		left join contacts
+		ct on c.manager_id = ct.id
+		where c.id
+		= #{id}
+	</select>
+
+	<select id="getContent" resultType="com.gaomin.crm.entity.Customer">
+		select *
+		from (select rownum rn,
+		c.id,
+		c.address,
+		c.chief,
+		c.name,
+		c.no,
+		c.region,
+		c.manager_id as "manager.id",
+		ct.name as "manager.name",
+		c.customer_level as "level",
+		c.state
+		from customers c
+		left join contacts
+		ct on c.manager_id = ct.id
+		<include refid="queryCondition" />)
+		<![CDATA[
+			where rn >= #{fromIndex} and rn < #{endIndex}
+		]]>
+	</select>
+
+	<select id="getTotalElements" resultType="int">
+		select count(*)
+		from
+		customers c
+		left join contacts
+		ct on c.manager_id =
+		ct.id
+		<include refid="queryCondition" />
+	</select>
+
+	<sql id="queryCondition">
+		<where>
+			<if test="name != null">
+				and c.name like #{name}
+			</if>
+			<if test="managerName != null">
+				and ct.name like #{managerName}
+			</if>
+			<if test="state != null">
+				and c.state like #{state}
+			</if>
+			<if test="region != null">
+				and c.region like #{region}
+			</if>
+			<if test="level != null">
+				and c.customer_level like #{level}
+			</if>
+		</where>
+	</sql>
+
+	<insert id="saveCustForFinish">
+		<selectKey keyProperty="id" order="BEFORE" resultType="long">
+			select crm_cust_seq.nextval from dual
+		</selectKey>
+		insert into customers (id,name,no,state)
+		values(#{id},#{name},#{no},#{state})
+	</insert>
+
+</mapper>
