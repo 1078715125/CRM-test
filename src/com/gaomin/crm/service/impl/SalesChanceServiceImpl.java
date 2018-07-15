@@ -49,11 +49,10 @@ public class SalesChanceServiceImpl implements SalesChanceService {
 		// 获取修正后的页码
 		int pageNo2 = page.getPageNo();
 
-		int firstIndex = ((pageNo2 - 1) * pageSize) + 1;
-		int lastIndex = (pageNo2 * pageSize) + 1;
+		int firstIndex = (pageNo2 - 1) * pageSize;
 
 		params.put("firstIndex", firstIndex);
-		params.put("lastIndex", lastIndex);
+		params.put("lastIndex", pageSize);
 
 		List<SalesChance> content = salesChanceMapper.getContent(params);
 		page.setContent(content);

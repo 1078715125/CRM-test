@@ -31,15 +31,14 @@ public class CustomerServiceImpl implements CustomerService {
 		// 查询总记录数
 		int totalElements = customerMapper.getTotalElements(params);
 
-		int pageSize = 3;
+		int pageSize = Page.NORMAL_PAGESIZE;
 		Page<Customer> page = new Page<Customer>(pageNo, pageSize,
 				totalElements);
 		pageNo = page.getPageNo();// 修正页码
 
-		int fromIndex = (pageNo - 1) * pageSize + 1;
-		int endIndex = fromIndex + pageSize;
+		int fromIndex = (pageNo - 1) * pageSize;
 		params.put("fromIndex", fromIndex);
-		params.put("endIndex", endIndex);
+		params.put("endIndex", pageSize);
 
 		List<Customer> content = customerMapper.getContent(params);
 		page.setContent(content);

@@ -36,26 +36,21 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</select>
 
 	<insert id="create">
-		insert into contacts(id,name,sex,position,tel,mobile,memo,customer_id)
-		values(crm_contact_seq.nextval,#{name},#{sex},#{position},
-		#{tel},#{mobile},#{memo},#{customer.id})
+		insert into contacts(name,sex,position,tel,mobile,memo,customer_id)
+		values(#{name},#{sex},#{position},#{tel},#{mobile},#{memo},#{customer.id})
 	</insert>
 
 	<select id="getContent" resultType="com.gaomin.crm.entity.Contact">
-		select *
-  		from (select rownum rn,
-               c.id,
-               c.memo,
-               c.mobile,
-               c.name,
-               c.position,
-               c.sex,
-               c.tel
-          from contacts c
-          <include refid="queryCondition"/>)
-          <![CDATA[
-	          where rn >= #{fromIndex} and rn < #{endIndex}
-          ]]>
+		select c.id,
+		c.memo,
+		c.mobile,
+		c.name,
+		c.position,
+		c.sex,
+		c.tel
+		from contacts c
+		<include refid="queryCondition"/>
+		limit ${fromIndex} , ${endIndex}
 	</select>
 
 	<select id="getTotalElements" resultType="int">
@@ -79,7 +74,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</select>
 
 	<insert id="saveForFinish">
-		insert into contacts (id,name,tel,customer_id) 
-		values(crm_contact_seq.nextval,#{name},#{tel},#{customer.id})
+		insert into contacts (name,tel,customer_id)
+		values(#{name},#{tel},#{customer.id})
 	</insert>
 </mapper>

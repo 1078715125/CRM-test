@@ -12,7 +12,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</update>
 
 	<update id="updateDelay">
-		update customer_drains t set t.delay = t.delay || #{delay}
+		update customer_drains t set t.delay = concat(t.delay, ${delay})
 		where t.id = #{id}
 	</update>
 	
@@ -29,8 +29,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</select>
 
 	<select id="getContent" resultType="com.gaomin.crm.entity.CustomerDrain">
-		select * from
-		(select rownum rn,t.id,c.name as "customer.name",
+		select t.id,c.name as "customer.name",
 		ct.name as "customer.manager.name",t.last_order_date,
 		t.drain_date,t.reason,t.status
 		from customer_drains t
@@ -38,10 +37,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		on t.customer_id = c.id
 		left join contacts ct
 		on c.manager_id = ct.id
-		<include refid="queryCondition"/>)
-		<![CDATA[
-			where rn >= #{fromIndex} and rn < #{endIndex}
-		]]>
+		<include refid="queryCondition"/>
+		limit ${fromIndex} , ${endIndex}
 	</select>
 
 	<select id="getTotalElements" resultType="int">

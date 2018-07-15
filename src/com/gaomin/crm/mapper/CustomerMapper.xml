@@ -44,14 +44,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		from customers c
 		left join contacts
 		ct on c.manager_id = ct.id
-		where c.id
-		= #{id}
+		where c.id = #{id}
 	</select>
 
 	<select id="getContent" resultType="com.gaomin.crm.entity.Customer">
-		select *
-		from (select rownum rn,
-		c.id,
+		select c.id,
 		c.address,
 		c.chief,
 		c.name,
@@ -64,10 +61,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		from customers c
 		left join contacts
 		ct on c.manager_id = ct.id
-		<include refid="queryCondition" />)
-		<![CDATA[
-			where rn >= #{fromIndex} and rn < #{endIndex}
-		]]>
+		<include refid="queryCondition" />
+		limit ${fromIndex} , ${endIndex}
 	</select>
 
 	<select id="getTotalElements" resultType="int">
@@ -75,8 +70,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		from
 		customers c
 		left join contacts
-		ct on c.manager_id =
-		ct.id
+		ct on c.manager_id = ct.id
 		<include refid="queryCondition" />
 	</select>
 
@@ -100,12 +94,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		</where>
 	</sql>
 
-	<insert id="saveCustForFinish">
-		<selectKey keyProperty="id" order="BEFORE" resultType="long">
-			select crm_cust_seq.nextval from dual
-		</selectKey>
-		insert into customers (id,name,no,state)
-		values(#{id},#{name},#{no},#{state})
+	<insert id="saveCustForFinish" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+		insert into customers (name,no,state)
+		values(#{name},#{no},#{state})
 	</insert>
 
 </mapper>

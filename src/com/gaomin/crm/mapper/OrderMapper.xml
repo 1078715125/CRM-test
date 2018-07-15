@@ -26,13 +26,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</select>
 	
 	<select id="getContent" resultType="com.gaomin.crm.entity.Order">
-		select * from
-		(select rownum rn,t.id, t.address, t.order_date as "date", t.no, t.status, t.customer_id
+		select t.id, t.address, t.order_date as "date", t.no, t.status, t.customer_id
 		from orders t
-		<include refid="queryCondition"/>)
-		<![CDATA[
-			where rn >= #{fromIndex} and rn < #{endIndex}
-		]]>
+		<include refid="queryCondition"/>
+		limit ${fromIndex} , ${endIndex}
 	</select>
 
 	<select id="getTotalElements" resultType="int">

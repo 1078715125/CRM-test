@@ -1,7 +1,11 @@
 package com.gaomin.crm.entity;
 
 
-public abstract class IdEntity {
+import java.io.Serializable;
+
+public abstract class IdEntity implements Serializable{
+
+
 
 	protected Long id;
 

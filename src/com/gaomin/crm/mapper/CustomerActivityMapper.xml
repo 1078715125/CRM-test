@@ -25,19 +25,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</select>
 
 	<insert id="create">
-		insert into customer_activities(id,activity_date,description,place,title,customer_id)
-		values(crm_activitie_seq.nextval,#{date},#{description},#{place},#{title},#{customer.id})
+		insert into customer_activities(activity_date,description,place,title,customer_id)
+		values(#{date},#{description},#{place},#{title},#{customer.id})
 	</insert>
 
 	<select id="getContent" resultType="com.gaomin.crm.entity.CustomerActivity">
-		select *
-  		from (select rownum rn,
-               t.id, t.activity_date as "date", t.description, t.place, t.title
+		select t.id, t.activity_date as "date", t.description, t.place, t.title
           from customer_activities t
-          <include refid="queryCondition"/>)
-          <![CDATA[
-	          where rn >= #{fromIndex} and rn < #{endIndex}
-          ]]>
+          <include refid="queryCondition"/>
+          limit ${fromIndex} , ${endIndex}
 	</select>
 
 	<select id="getTotalElements" resultType="int">

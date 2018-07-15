@@ -94,30 +94,24 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</delete>
 
 	<insert id="save">
-		insert into sales_chances (id, source, cust_name,
+		insert into sales_chances (source, cust_name,
 		rate, title, contact, contact_tel,
 		description, status,
 		created_user_id, create_date)
-		values(crm_seq.nextval,#{source},#{custName},#{rate},#{title},#{contact},#{contactTel},
+		values(#{source},#{custName},#{rate},#{title},#{contact},#{contactTel},
 		#{description},#{status},#{createBy.id},#{createDate})
 	</insert>
 
 	<select id="getContent" resultType="com.gaomin.crm.entity.SalesChance">
-		select *
-		from (select rownum rn,
-		s.id,s.status,
+		select s.id,s.status,
 		s.cust_name,
 		s.title,
 		s.contact,
 		s.contact_tel,
 		s.create_date
 		from sales_chances s
-		<include refid="queryCondition"/>)
-		a
-		<![CDATA[
-		where a.rn >= #{firstIndex} and a.rn < #{lastIndex}
-		]]>
-
+		<include refid="queryCondition"/>
+		limit ${firstIndex} ,${lastIndex}
 	</select>
 
 	<select id="getTotalElements" resultType="long">

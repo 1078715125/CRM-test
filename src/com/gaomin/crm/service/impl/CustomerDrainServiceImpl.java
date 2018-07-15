@@ -36,15 +36,14 @@ public class CustomerDrainServiceImpl implements CustomerDrainService {
 				.parserRequestParams2MyBatisParams(reqParams);
 
 		int totalElements = customerDrainMapper.getTotalElements(params);
-		int pageSize = 2;
+		int pageSize = Page.NORMAL_PAGESIZE;
 		Page<CustomerDrain> page = new Page<CustomerDrain>(pageNo, pageSize,
 				totalElements);
 		pageNo = page.getPageNo();
 
-		int fromIndex = (pageNo - 1) * pageSize + 1;
-		int endIndex = fromIndex + pageSize;
+		int fromIndex = (pageNo - 1) * pageSize;
 		params.put("fromIndex", fromIndex);
-		params.put("endIndex", endIndex);
+		params.put("endIndex", pageSize);
 
 		List<CustomerDrain> content = customerDrainMapper.getContent(params);
 		page.setContent(content);

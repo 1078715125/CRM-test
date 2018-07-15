@@ -33,14 +33,13 @@ public class ContactServiceImpl implements ContactService {
 
 		int totalElements = contactMapper.getTotalElements(params);
 
-		int pageSize = 3;
+		int pageSize = Page.NORMAL_PAGESIZE;
 		Page<Contact> page = new Page<Contact>(pageNo, pageSize, totalElements);
 		pageNo = page.getPageNo();// 修正页码
 		
-		int fromIndex = (pageNo - 1) * pageSize + 1;
-		int endIndex = fromIndex + pageSize;
+		int fromIndex = (pageNo - 1) * pageSize;
 		params.put("fromIndex", fromIndex);
-		params.put("endIndex", endIndex);
+		params.put("endIndex", pageSize);
 		
 		List<Contact> content = contactMapper.getContent(params);
 		page.setContent(content);

@@ -1,19 +1,10 @@
 package com.gaomin.crm.handler;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import com.gaomin.crm.entity.Authority;
 import com.gaomin.crm.entity.Role;
 import com.gaomin.crm.entity.User;
+import com.gaomin.crm.model.Navigate;
+import com.gaomin.crm.model.Page;
 import com.gaomin.crm.service.RoleService;
 import com.gaomin.crm.service.UserService;
 import com.gaomin.crm.utils.GlobalNames;
@@ -24,16 +15,15 @@ import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.util.WebUtils;
 
-import com.gaomin.crm.model.Navigate;
-import com.gaomin.crm.model.Page;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.util.*;
 
 @Controller
 @RequestMapping("/user")
@@ -69,7 +59,7 @@ public class UserHandler {
 			pn = authMap.get(pareAuth.getId());
 			if (pn == null) {
 				pn = new Navigate(pareAuth.getId(), pareAuth.getDisplayName());
-				pn.setState("closed");
+				pn.setState("open");
 				
 				root.getChildren().add(pn);
 				authMap.put(pareAuth.getId(), pn);
@@ -78,21 +68,6 @@ public class UserHandler {
 			pn.getChildren().add(sn);
 			
 		}
-
-		// List<Authority> ParentAuthorities = roleService
-		// .getParentAuthoritiesByUserId(user.getId());
-		// for (Authority pa : ParentAuthorities) {
-		// Navigate pn = new Navigate(pa.getId(), pa.getDisplayName());
-		// pn.setState("closed");
-		// List<Authority> subAuthorities = pa.getSubAuthorities();
-		// for (Authority sa : subAuthorities) {
-		// Navigate sn = new Navigate(sa.getId(), sa.getDisplayName(), path +
-		// sa.getUrl());
-		// pn.getChildren().add(sn);
-		// }
-		// root.getChildren().add(pn);
-		// }
-
 		navigates.add(root);
 		return navigates;
 	}

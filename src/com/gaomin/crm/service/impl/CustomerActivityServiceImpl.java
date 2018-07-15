@@ -27,15 +27,14 @@ public class CustomerActivityServiceImpl implements CustomerActivityService {
 				.parserRequestParams2MyBatisParams(reqParam);
 
 		int totalElements = customerActivityMapper.getTotalElements(params);
-		int pageSize = 3;
+		int pageSize = Page.NORMAL_PAGESIZE;
 		Page<CustomerActivity> page = new Page<CustomerActivity>(pageNo,
 				pageSize, totalElements);
 		pageNo = page.getPageNo();
 
-		int fromIndex = (pageNo - 1) * pageSize + 1;
-		int endIndex = fromIndex + pageSize;
+		int fromIndex = (pageNo - 1) * pageSize;
 		params.put("fromIndex", fromIndex);
-		params.put("endIndex", endIndex);
+		params.put("endIndex", pageSize);
 
 		List<CustomerActivity> content = customerActivityMapper.getContent(params);
 		page.setContent(content);
