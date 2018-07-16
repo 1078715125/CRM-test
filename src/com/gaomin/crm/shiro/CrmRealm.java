@@ -3,6 +3,7 @@ package com.gaomin.crm.shiro;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 
@@ -86,6 +87,9 @@ public class CrmRealm extends AuthorizingRealm {
 		ByteSource salt = ByteSource.Util.bytes("ceadfd47cdaa814c");
 		SimpleHash simpleHash = new SimpleHash("MD5", "123456", salt, 1024);
 		System.out.println(simpleHash);
-	}
+
+        String token  = UUID.randomUUID().toString().replaceAll("-","");
+        System.out.println(token);
+    }
 
 }

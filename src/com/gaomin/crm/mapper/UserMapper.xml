@@ -28,20 +28,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 	<insert id="create">
 		insert into users
-		  (id, enabled, name, password, role_id)
+		  (enabled, name, password, role_id)
 		values
-		  (crm_seq.nextval, #{enabled}, #{name}, #{password}, #{role.id})
+		  (#{enabled}, #{name}, #{password}, #{role.id})
 	</insert>
 
 	<select id="getContent" resultType="com.gaomin.crm.entity.User">
-		select * from
-		(select rownum rn,id, enabled, name, 
+		select id, enabled, name,
 		password, role_id as "role.id", salt
 		from users u
-		<include refid="queryCondtion"/>)
-		<![CDATA[
-		where rn >= #{fromIndex} and rn <#{endIndex}
-		]]>
+		<include refid="queryCondtion"/>
+		LIMIT ${fromIndex} , ${endIndex}
 	</select>
 
 	<select id="getTotalElements" resultType="int">

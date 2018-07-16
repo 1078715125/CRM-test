@@ -43,7 +43,7 @@ public class CustomerServiceHandler {
 		return "service/archive/archive";
 	}
 
-	@RequestMapping("/archive")
+	@RequestMapping("/archive/list")
 	public String archivePage(HttpServletRequest request,
 			Map<String, Object> map,
 			@RequestParam(value = "pageNo", required = false) String pageNoStr) {
@@ -59,7 +59,7 @@ public class CustomerServiceHandler {
                            RedirectAttributes attributes) {
 		customerServiceService.feedback(customerService);
 		attributes.addFlashAttribute("message", "保存成功!");
-		return "redirect:/service/feedback";
+		return "redirect:/service/feedback/list";
 	}
 
 	@RequestMapping(value = "/feedback/{id}", method = RequestMethod.GET)
@@ -71,7 +71,7 @@ public class CustomerServiceHandler {
 		return "service/feedback/feedback";
 	}
 
-	@RequestMapping("/feedback")
+	@RequestMapping("/feedback/list")
 	public String feedbackPage(HttpServletRequest request,
 			Map<String, Object> map,
 			@RequestParam(value = "pageNo", required = false) String pageNoStr) {
@@ -87,7 +87,7 @@ public class CustomerServiceHandler {
                        RedirectAttributes attributes) {
 		customerServiceService.deal(customerService);
 		attributes.addFlashAttribute("message", "保存成功!");
-		return "redirect:/service/deal";
+		return "redirect:/service/deal/list";
 	}
 
 	@RequestMapping(value = "/deal/{id}", method = RequestMethod.GET)
@@ -100,7 +100,7 @@ public class CustomerServiceHandler {
 		return "service/deal/deal";
 	}
 
-	@RequestMapping("/deal")
+	@RequestMapping("/deal/list")
 	public String dealPage(HttpServletRequest request, Map<String, Object> map,
 			@RequestParam(value = "pageNo", required = false) String pageNoStr) {
 
@@ -113,7 +113,7 @@ public class CustomerServiceHandler {
 	@RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
 	public String delete(@PathVariable("id") Long id) {
 		customerServiceService.delete(id);
-		return "redirect:/service/allot";
+		return "redirect:/service/allot/list";
 	}
 
 	@ResponseBody
@@ -125,7 +125,7 @@ public class CustomerServiceHandler {
 		return "1";
 	}
 
-	@RequestMapping("/allot")
+	@RequestMapping("/allot/list")
 	public String allotPage(HttpServletRequest request,
 			Map<String, Object> map,
 			@RequestParam(value = "pageNo", required = false) String pageNoStr) {
@@ -161,7 +161,7 @@ public class CustomerServiceHandler {
 		customerService.setCreatedby(user);
 		customerServiceService.create(customerService);
 
-		return "redirect:/service/allot";
+		return "redirect:/service/allot/list";
 	}
 
 	@RequestMapping(value = "/create", method = RequestMethod.GET)

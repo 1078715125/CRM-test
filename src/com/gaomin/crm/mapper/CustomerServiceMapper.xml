@@ -55,9 +55,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</update>
 
 	<select id="getContent" resultType="com.gaomin.crm.entity.CustomerService">
-		select * from 
-		(select rownum rn,
-		       cs.id,
+		select cs.id,
 		       cs.service_type,
 		       cs.service_title,
 		       cs.service_state,
@@ -75,10 +73,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		  left join customers c on cs.customer_id = c.id
 		  left join users u on cs.created_id = u.id
 		  left join users ua on cs.allot_id = ua.id
-		<include refid="queryCondition"/>)
-		<![CDATA[
-		where rn >= #{fromIndex} and rn < #{endIndex}
-		]]>
+		<include refid="queryCondition"/>
+		LIMIT ${fromIndex} , ${endIndex}
 	</select>
 
 	<select id="getTotalElements" resultType="int">
@@ -132,10 +128,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</sql>
 
 	<insert id="create">
-		insert into customer_services(id, create_date,
+		insert into customer_services(create_date,
 		service_request, service_state, service_title,
 		service_type, created_id, customer_id)
-		values(crm_cust_seq.nextval,#{createDate},#{serviceRequest},
+		values(#{createDate},#{serviceRequest},
 		#{serviceState},#{serviceTitle},#{serviceType},
 		#{createdby.id},#{customer.id})
 	</insert>

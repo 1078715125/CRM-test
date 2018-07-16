@@ -32,14 +32,13 @@ public class CustomerServiceServiceImpl implements CustomerServiceService {
 		Map<String, Object> params = ParamsUtil.parserRequestParams2MyBatisParams(reqParams);
 		
 		int totalElements = customerServiceMapper.getTotalElements(params);
-		int pageSize = 3;
+		int pageSize = Page.NORMAL_PAGESIZE;
 		Page<CustomerService> page = new Page<CustomerService>(pageNo, pageSize, totalElements);
 		pageNo = page.getPageNo();// 修正页码
 		
-		int fromIndex = (pageNo - 1) * pageSize + 1;
-		int endIndex = fromIndex + pageSize;
+		int fromIndex = (pageNo - 1) * pageSize;
 		params.put("fromIndex", fromIndex);
-		params.put("endIndex", endIndex);
+		params.put("endIndex", pageSize);
 		
 		List<CustomerService> content = customerServiceMapper.getContent(params);
 		page.setContent(content);

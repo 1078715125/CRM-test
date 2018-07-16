@@ -33,13 +33,12 @@ public class RoleServiceImpl implements RoleService {
 				.parserRequestParams2MyBatisParams(reqParams);
 
 		int totalElements = roleMapper.getTotalElements(params);
-		int pageSize = 3;
+		int pageSize = Page.NORMAL_PAGESIZE;
 		Page<Role> page = new Page<Role>(pageNo, pageSize, totalElements);
 		pageNo = page.getPageNo();
-		int fromIndex = (pageNo - 1) * pageSize + 1;
-		int endIndex = fromIndex + pageSize;
+		int fromIndex = (pageNo - 1) * pageSize;
 		params.put("fromIndex", fromIndex);
-		params.put("endIndex", endIndex);
+		params.put("endIndex", pageSize);
 		List<Role> content = roleMapper.getContent(params);
 		page.setContent(content);
 		return page;

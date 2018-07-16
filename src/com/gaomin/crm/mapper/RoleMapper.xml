@@ -83,18 +83,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 	<insert id="create">
 		insert into roles
-		(id, description, enabled, name)
+		(idescription, enabled, name)
 		values
-		(crm_seq.nextval, #{description}, #{enabled}, #{name})
+		(#{description}, #{enabled}, #{name})
 	</insert>
 
 	<select id="getContent" resultType="com.gaomin.crm.entity.Role">
-		select * from
-		(select rownum rn,r.*
-		from roles r)
-		<![CDATA[
-		where rn >= #{fromIndex} and rn < #{endIndex}
-		]]>
+		select r.*
+		from roles r
+		LIMIT ${fromIndex} , ${endIndex}
 	</select>
 
 	<select id="getTotalElements" resultType="int">
